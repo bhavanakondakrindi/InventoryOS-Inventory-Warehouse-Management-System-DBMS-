@@ -2,9 +2,9 @@
 ```markdown
 # InventoryOS — Inventory & Warehouse Management System
 
-InventoryOS is a full-stack inventory and warehouse management system built for managing products, stock, customer orders, suppliers, purchase orders, and inventory across multiple warehouses.
+InventoryOS is a full-stack inventory and warehouse management system designed to manage products, stock, customer orders, suppliers, purchase orders, and inventory across multiple warehouses.
 
-The system has two main interfaces: a Customer Portal for browsing products and placing orders, and a Warehouse Management Portal for managing inventory and fulfilling orders. Both interfaces use the same backend and centralized MySQL database.
+The system provides two main interfaces: a Customer Portal for browsing products and placing orders, and a Warehouse Management Portal for managing inventory and fulfilling orders. Both interfaces work with the same centralized MySQL database through a Node.js and Express.js backend.
 
 ## Features
 
@@ -18,53 +18,84 @@ The system has two main interfaces: a Customer Portal for browsing products and 
 - Inter-warehouse stock transfers
 - Supplier management
 - Purchase order management
-- Stock movement history and traceability
+- Stock movement tracking and traceability
 - Transaction-based inventory updates
 
-## How It Works
-
-The application follows a simple three-layer architecture:
+## System Architecture
 
 ```text
-React Frontend
-      |
-      | REST API / JSON
-      ↓
-Node.js + Express Backend
-      |
-      | mysql2
-      ↓
-MySQL Database
+Customer Portal              Warehouse Management Portal
+     React                           React
+       │                               │
+       └──────────────┬────────────────┘
+                      │
+                REST API / JSON
+                      │
+                      ▼
+              Node.js + Express
+                  Backend
+                      │
+                    mysql2
+                      │
+                      ▼
+               MySQL Database
+          inventory_warehouse_db
 ```
 
-The Customer Portal and Warehouse Management Portal both communicate with the Express backend. The backend handles business logic and database operations, while MySQL stores the centralized application data.
+The frontend does not connect directly to MySQL. React communicates with the Express REST API, and the backend handles database operations using `mysql2`.
 
-When a customer places an order, the backend checks which warehouse can fulfill the complete order, creates the order, updates the inventory, and records the stock movement within a database transaction.
+## Order Workflow
+
+When a customer places an order:
+
+```text
+Customer places order
+        ↓
+POST /api/orders
+        ↓
+Backend validates the order
+        ↓
+Warehouse allocation
+        ↓
+Database transaction
+        ↓
+Create order + order items
+        ↓
+Update inventory
+        ↓
+Record stock movement
+        ↓
+Commit transaction
+        ↓
+Order appears in Warehouse Portal
+```
+
+Inventory is deducted when the order is created. When the warehouse fulfills the order, the status is updated without deducting the inventory again.
 
 ## Database
 
-The project uses MySQL with 12 main tables:
+InventoryOS uses a relational MySQL database with 12 main tables:
 
-- `users`
-- `warehouses`
-- `products`
-- `inventory`
-- `suppliers`
-- `product_suppliers`
-- `orders`
-- `order_items`
-- `purchase_orders`
-- `purchase_order_items`
-- `stock_movements`
-- `warehouse_transfers`
+- `users` — customers, warehouse managers, and administrators
+- `warehouses` — warehouse information
+- `products` — product details
+- `inventory` — product quantity at each warehouse
+- `suppliers` — supplier information
+- `product_suppliers` — product and supplier relationships
+- `orders` — customer orders
+- `order_items` — products included in orders
+- `purchase_orders` — supplier purchase orders
+- `purchase_order_items` — products included in purchase orders
+- `stock_movements` — inventory movement history
+- `warehouse_transfers` — transfers between warehouses
 
 The `inventory` table connects products and warehouses and stores the quantity available for each product at each warehouse.
 
-The database structure is available in `schema.sql`, while `seed_data.sql` contains the initial project data.
+The database structure is provided in `schema.sql`, and the initial project data is provided in `seed_data.sql`.
 
 ## Tech Stack
 
-**Frontend**
+### Frontend
 - React.js
 - Vite
 - JavaScript
@@ -72,18 +103,18 @@ The database structure is available in `schema.sql`, while `seed_data.sql` conta
 - CSS3
 - Axios
 
-**Backend**
+### Backend
 - Node.js
 - Express.js
 - REST APIs
 - mysql2
 - CORS
 
-**Database**
+### Database
 - MySQL
 - MySQL Workbench
 
-**Tools**
+### Development
 - Visual Studio Code
 - Git
 - GitHub
@@ -92,6 +123,7 @@ The database structure is available in `schema.sql`, while `seed_data.sql` conta
 
 ```text
 InventoryOS/
+│
 ├── backend/
 │   ├── src/
 │   │   ├── config/
@@ -126,12 +158,17 @@ git clone https://github.com/bhavanakondakrindi/InventoryOS-Inventory-Warehouse-
 cd InventoryOS-Inventory-Warehouse-Management-System-DBMS-
 ```
 
-### 2. Set up MySQL
+### 2. Set up the database
 
-Create the database and run:
+Create the MySQL database and run:
 
 ```text
 schema.sql
+```
+
+Then populate the database using:
+
+```text
 seed_data.sql
 ```
 
@@ -150,13 +187,15 @@ cd backend
 npm install
 ```
 
-Create a `.env` file based on `.env.example`, then start the server:
+Create a `.env` file using `.env.example` as a reference.
+
+Then start the backend:
 
 ```bash
 npm start
 ```
 
-Backend:
+The backend runs on:
 
 ```text
 http://localhost:5001
@@ -172,7 +211,7 @@ npm install
 npm run dev
 ```
 
-Frontend:
+The frontend runs on:
 
 ```text
 http://localhost:5173
@@ -180,11 +219,25 @@ http://localhost:5173
 
 ## Testing
 
-The system has been tested for product retrieval, inventory operations, customer order creation, warehouse allocation, stock movement tracking, low-stock detection, warehouse transfers, purchase orders, order status updates, API validation, database connectivity, and transaction handling.
+The system was tested for:
+
+- Product retrieval
+- Inventory operations
+- Customer order creation
+- Smart warehouse allocation
+- Inventory updates
+- Stock movement tracking
+- Low-stock detection
+- Warehouse transfers
+- Purchase order operations
+- Order status updates
+- API validation
+- Database connectivity
+- Transaction handling
 
 ## Project Documentation
 
-The DBMS project presentation is included in:
+The project presentation is available in:
 
 `DBMS PRESENTATION.pdf`
 
@@ -195,15 +248,6 @@ The DBMS project presentation is included in:
 | 2520030601 | Siri Billakanti |
 | 2520030082 | Bhavana Kondakrindi |
 | 2520030184 | Aniketh Pani |
-
-## Future Enhancements
-
-- Barcode-based product scanning
-- Advanced inventory analytics
-- Role-based authentication
-- Automated purchase order generation
-- Enhanced reporting
-- Cloud deployment
 
 **Course:** Database Systems Engineering and Distributed Backend Development
 
