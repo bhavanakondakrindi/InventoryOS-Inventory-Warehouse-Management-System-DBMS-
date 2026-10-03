@@ -1,6 +1,3 @@
-Yep 😭 — **clean, natural, GitHub-project style.** No 47 sections, no corporate-AI essay, no unnecessary emojis.
-
-Copy this **entire thing as one `README.md`**:
 
 ```markdown
 # InventoryOS — Inventory & Warehouse Management System
