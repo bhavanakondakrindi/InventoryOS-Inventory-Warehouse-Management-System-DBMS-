@@ -1,5 +1,5 @@
 
-```markdown
+
 # InventoryOS — Inventory & Warehouse Management System
 
 InventoryOS is a full-stack inventory and warehouse management system designed to manage products, stock, customer orders, suppliers, purchase orders, and inventory across multiple warehouses.
