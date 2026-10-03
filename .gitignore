@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+mysql_data/
+*.sock
+*.sock.lock
+*.log
+
+.DS_Store
+__MACOSX/
+
+Archive.zip
